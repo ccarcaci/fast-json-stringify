@@ -1,37 +1,23 @@
 'use strict'
 
 const http = require('http')
-
-const stringify = require('.')({
-  type: 'object',
-  properties: {
-    hello: {
-      type: 'string'
-    },
-    data: {
-      type: 'number'
-    },
-    nested: {
-      type: 'object',
-      properties: {
-        more: {
-          type: 'string'
-        }
-      }
-    }
-  }
-})
+const longModule = require('long')
+const build = require('.')
 
 const server = http.createServer(handle)
 
 function handle (req, res) {
-  const data = {
-    hello: 'world',
-    data: 42,
-    nested: {
-      more: 'data'
+  const schema = {
+    properties: {
+      data: {
+        type: 'integer'
+      }
     }
   }
+  const stringify = build(schema)
+  const data = stringify({
+    data: longModule.fromString('18446744073709551615', true)
+  })
   if (req.url === '/JSON') {
     res.end(JSON.stringify(data))
   } else {
